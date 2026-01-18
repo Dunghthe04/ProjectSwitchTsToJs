@@ -144,3 +144,24 @@ export const createTask = async (req: Request, res: Response) => {
         })
     }
 }
+
+
+//[PATCH] /api/v1/editTask
+export const editTask = async (req: Request, res: Response) => {
+    try {
+        const id=req.params.id;
+        const body = req.body;
+        await Task.updateOne({_id: id},body)
+        res.json({
+            code: 200,
+            message: "Sửa công việc thành công"
+        })
+
+
+    } catch (error) {
+        res.json({
+            code: 400,
+            message: "Sửa thất bại!"
+        })
+    }
+}
