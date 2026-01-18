@@ -5,5 +5,6 @@ import * as controller from "../controller/user.controller"
 const router: Router=express.Router();
 
 router.post('/register',controller.register)
+router.get('/login',controller.login)
 
 export const userRouter: Router= router

@@ -38,3 +38,43 @@ export const register = async (req: Request, res: Response) => {
         })
     }
 }
+
+//[GET] /api/v1/user/login
+export const login = async (req, res) => {
+    //lay body(email+pass)
+    const body = req.body;
+
+    //kiểm tra email
+    const user = await User.findOne({
+        email: body.email
+    })
+
+    //nếu email chưa tồn tại
+    if (!user) {
+        res.json({
+            code: 400,
+            message: "Email không tồn tại",
+        })
+        return
+    }
+
+    //nếu password sai
+    if (md5(body.password) != user.password) {
+        res.json({
+            code: 400,
+            message: "Mật khẩu chưa chính xác",
+        })
+        return
+    }
+
+    const token = user.token;
+    res.cookie("token", token)
+
+    res.json({
+        code: 200,
+        message: "Đăng nhập thành công",
+        token: token
+    })
+
+
+}
