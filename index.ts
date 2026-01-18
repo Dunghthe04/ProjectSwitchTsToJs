@@ -16,6 +16,4 @@ app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 indexRouter(app)
 
-app.listen(port,()=>{
-    console.log(`App listening on port ${port}`)
-})
+export default app;
