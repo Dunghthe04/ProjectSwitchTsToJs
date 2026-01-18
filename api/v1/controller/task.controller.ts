@@ -101,7 +101,8 @@ export const changeMulti = async (req: Request, res: Response) => {
     try {
         const { ids, key, value } = req.body;
         enum option {
-            STATUS = "status"
+            STATUS = "status",
+            DELETE="delete"
         }
         switch (key) {
             case option.STATUS:
@@ -111,6 +112,14 @@ export const changeMulti = async (req: Request, res: Response) => {
                     message: "Cập nhập trạng thái thành công"
                 })
                 break;
+
+             case option.DELETE:
+                await Task.updateMany({ _id: { $in: ids } }, { deleted: true })
+                res.json({
+                    code: 200,
+                    message: "Xóa tasks thành công"
+                })
+                break;    
 
             default:
                 break;
