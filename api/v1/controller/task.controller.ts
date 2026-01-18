@@ -101,7 +101,7 @@ export const changeMulti = async (req: Request, res: Response) => {
     try {
         const { ids, key, value } = req.body;
         enum option {
-            STATUS="status"
+            STATUS = "status"
         }
         switch (key) {
             case option.STATUS:
@@ -120,6 +120,27 @@ export const changeMulti = async (req: Request, res: Response) => {
         res.json({
             code: 400,
             message: "Không tồn tại!"
+        })
+    }
+}
+
+
+//[POST] /api/v1/createTask
+export const createTask = async (req: Request, res: Response) => {
+    try {
+        const body = req.body;
+        const newTask = new Task(body);
+        await newTask.save();
+        res.json({
+            code: 200,
+            message: "Thêm mới thành cồng"
+        })
+
+
+    } catch (error) {
+        res.json({
+            code: 400,
+            message: "Tạo thất bại!"
         })
     }
 }
