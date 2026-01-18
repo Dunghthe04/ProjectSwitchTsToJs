@@ -1,5 +1,6 @@
 import Task from "../models/task.model"
 import paginationHelpers from "../../../helpers/pagination"
+import searchHelpers from "../../../helpers/search"
 
 //[GET] /api/v1/tasks
 export const index = async (req, res) => {
@@ -23,7 +24,6 @@ export const index = async (req, res) => {
             sort[sortKey] = sortValue
         }
         //phân trang
-        //Phân trang
         const countRecords = await Task.countDocuments(find);
         const limitNumber = req.query.limit;
         let initPagination = {
@@ -36,7 +36,12 @@ export const index = async (req, res) => {
         }
 
         let pagination = paginationHelpers(initPagination, req.query, countRecords)
+        //tìm kiếm
+        let objectSearch = searchHelpers(req.query);
 
+        if (objectSearch.regex) {
+            find["title"] = objectSearch.regex
+        }
 
         const tasks = await Task.find(find).sort(sort).limit(pagination.limit).skip(pagination.skip)
         res.json(tasks)
