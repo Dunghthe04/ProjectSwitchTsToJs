@@ -21,7 +21,7 @@ export const index = async (req: Request, res: Response) => {
         //sắp xếp
         const sort = {};
         if (req.query.sortKey && req.query.sortValue) {
-            const sortKey=req.query.sortKey.toString()
+            const sortKey = req.query.sortKey.toString()
             sort[sortKey] = req.query.sortValue;
         }
         //phân trang
@@ -44,8 +44,8 @@ export const index = async (req: Request, res: Response) => {
             find.title = objectSearch.regex
         }
 
-        console.log("find",find);
-        
+        console.log("find", find);
+
 
         const tasks = await Task.find(find).sort(sort).limit(pagination.limit).skip(pagination.skip)
         res.json(tasks)
@@ -87,6 +87,34 @@ export const changeStatus = async (req: Request, res: Response) => {
             code: 200,
             message: "Cập nhập trạng thái thành công"
         })
+
+    } catch (error) {
+        res.json({
+            code: 400,
+            message: "Không tồn tại!"
+        })
+    }
+}
+
+//[PATCH] /api/v1/changeMulti
+export const changeMulti = async (req: Request, res: Response) => {
+    try {
+        const { ids, key, value } = req.body;
+        enum option {
+            STATUS="status"
+        }
+        switch (key) {
+            case option.STATUS:
+                await Task.updateMany({ _id: { $in: ids } }, { status: value })
+                res.json({
+                    code: 200,
+                    message: "Cập nhập trạng thái thành công"
+                })
+                break;
+
+            default:
+                break;
+        }
 
     } catch (error) {
         res.json({
