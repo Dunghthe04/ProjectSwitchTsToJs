@@ -1,9 +1,44 @@
 import Task from "../models/task.model"
+import paginationHelpers from "../../../helpers/pagination"
 
 //[GET] /api/v1/tasks
 export const index = async (req, res) => {
     try {
-        const tasks= await Task.find({deleted: false})
+        interface find {
+            deleted: boolean,
+            status?: string
+        }
+        const find: find = {
+            deleted: false
+        }
+        //Lọc trạng thái
+        if (req.query.status) {
+            find.status = req.query.status
+        }
+        //sắp xếp
+        const sortKey = req.query.sortKey
+        const sortValue = req.query.sortValue
+        const sort = {};
+        if (sortKey && sortValue) {
+            sort[sortKey] = sortValue
+        }
+        //phân trang
+        //Phân trang
+        const countRecords = await Task.countDocuments(find);
+        const limitNumber = req.query.limit;
+        let initPagination = {
+            limit: 2,
+            currentPage: 1
+        }
+
+        if (limitNumber) {
+            initPagination.limit = parseInt(limitNumber)
+        }
+
+        let pagination = paginationHelpers(initPagination, req.query, countRecords)
+
+
+        const tasks = await Task.find(find).sort(sort).limit(pagination.limit).skip(pagination.skip)
         res.json(tasks)
     } catch (error) {
         res.json("Không có dữ liệu")
