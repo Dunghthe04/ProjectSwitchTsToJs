@@ -2,7 +2,7 @@ interface objectSearch{
     keyword: string,
     regex?: RegExp
 }
-const searchHelpers = (query: Record<string,any>) => {
+const searchHelpers = (query: Record<string,any>):objectSearch => {
     let objectSearch: objectSearch = {
         keyword: ''
     }

@@ -1,31 +1,32 @@
 import Task from "../models/task.model"
 import paginationHelpers from "../../../helpers/pagination"
 import searchHelpers from "../../../helpers/search"
+import { Request, Response } from "express"
 
 //[GET] /api/v1/tasks
-export const index = async (req, res) => {
+export const index = async (req: Request, res: Response) => {
     try {
         interface find {
             deleted: boolean,
-            status?: string
+            status?: string,
+            title?: RegExp
         }
         const find: find = {
             deleted: false
         }
         //Lọc trạng thái
         if (req.query.status) {
-            find.status = req.query.status
+            find.status = req.query.status.toString()
         }
         //sắp xếp
-        const sortKey = req.query.sortKey
-        const sortValue = req.query.sortValue
         const sort = {};
-        if (sortKey && sortValue) {
-            sort[sortKey] = sortValue
+        if (req.query.sortKey && req.query.sortValue) {
+            const sortKey=req.query.sortKey.toString()
+            sort[sortKey] = req.query.sortValue;
         }
         //phân trang
         const countRecords = await Task.countDocuments(find);
-        const limitNumber = req.query.limit;
+        const limitNumber = req.query.limit?.toString();
         let initPagination = {
             limit: 2,
             currentPage: 1
@@ -40,8 +41,11 @@ export const index = async (req, res) => {
         let objectSearch = searchHelpers(req.query);
 
         if (objectSearch.regex) {
-            find["title"] = objectSearch.regex
+            find.title = objectSearch.regex
         }
+
+        console.log("find",find);
+        
 
         const tasks = await Task.find(find).sort(sort).limit(pagination.limit).skip(pagination.skip)
         res.json(tasks)
@@ -51,10 +55,10 @@ export const index = async (req, res) => {
 }
 
 //[GET] /api/v1/detail/:id
-export const detail = async (req, res) => {
+export const detail = async (req: Request, res: Response) => {
     try {
         //lay id dong
-        const id = req.params.id;
+        const id: string = req.params.id.toString();
         const task = await Task.find({
             deleted: false,
             _id: id
@@ -65,3 +69,29 @@ export const detail = async (req, res) => {
     }
 }
 
+
+//[PATCH] /api/v1/changeStatus/:id
+export const changeStatus = async (req: Request, res: Response) => {
+    try {
+        ///lay id muuon change
+        const id: string = req.params.id.toString();
+
+        //lay ca body front end gui len
+        const body = req.body;
+        const statusNew: string = body.status;
+
+        await Task.updateOne({
+            _id: id
+        }, { status: statusNew })
+        res.json({
+            code: 200,
+            message: "Cập nhập trạng thái thành công"
+        })
+
+    } catch (error) {
+        res.json({
+            code: 400,
+            message: "Không tồn tại!"
+        })
+    }
+}
