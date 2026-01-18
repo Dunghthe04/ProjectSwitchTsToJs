@@ -165,3 +165,23 @@ export const editTask = async (req: Request, res: Response) => {
         })
     }
 }
+
+
+//[DELETE] /api/v1/deleteTask
+export const deleteTask = async (req: Request, res: Response) => {
+    try {
+        const id=req.params.id;
+        await Task.updateOne({_id: id},{deleted: true})
+        res.json({
+            code: 200,
+            message: "Xóa công việc thành công"
+        })
+
+
+    } catch (error) {
+        res.json({
+            code: 400,
+            message: "Xóa thất bại!"
+        })
+    }
+}
