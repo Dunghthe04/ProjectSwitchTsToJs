@@ -40,7 +40,7 @@ export const register = async (req: Request, res: Response) => {
 }
 
 //[GET] /api/v1/user/login
-export const login = async (req, res) => {
+export const login = async (req: Request, res: Response) => {
     //lay body(email+pass)
     const body = req.body;
 
@@ -78,3 +78,14 @@ export const login = async (req, res) => {
 
 
 }
+
+//[GET] /api/v1/user/profiledetail
+export const profileDetail = async (req: Request, res: Response) => {
+    //lay user tu middleware luon
+    res.json({
+        code: 200,
+        message: "Lay thong tin thanh cong",
+        info: req["user"]
+    })
+}
+
