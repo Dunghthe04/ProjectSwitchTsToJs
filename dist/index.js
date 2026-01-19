@@ -49,4 +49,6 @@ app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 (0, index_route_1.default)(app);
-exports.default = app;
+app.listen(port, () => {
+    console.log(`App listening on port ${port}`);
+});
